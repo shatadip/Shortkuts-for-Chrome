@@ -1,37 +1,30 @@
-document.addEventListener('DOMContentLoaded', function() {
-    let isRightClicking = false;
-    chrome.runtime.sendMessage({ action: 'toggleRightClick', value: true });
-    // Tell the background script to toggle right-clicking
-    chrome.runtime.sendMessage({ action: 'toggleRightClick', value: true });
-  
-    // Listen for mouse down events
-    window.addEventListener('mousedown', function(event) {
-      // Check if it's a right-click
-      isRightClicking = (event.button === 2);
-    });
-  
-    // Listen for mouse up events
-    window.addEventListener('mouseup', function(event) {
-      // Reset right-click state on mouse up
-      isRightClicking = false;
-    });
-  
-    // Listen for mouse wheel events in the popup
-    window.addEventListener('wheel', function(event) {
-      if (isRightClicking) {
-        const delta = event.deltaY;
-  
-        if (delta > 0) {
-          chrome.runtime.sendMessage({ action: 'scroll', direction: 'next' });
-        } else if (delta < 0) {
-          chrome.runtime.sendMessage({ action: 'scroll', direction: 'prev' });
-        }
-      }
-    });
-  });
-  
-//   document.addEventListener('DOMContentLoaded', function() {
-//     // Tell the background script to toggle right-clicking
-//     chrome.runtime.sendMessage({ action: 'toggleRightClick', value: true });
-//   });
-  
+/*
+ * This event listener is responsible for detecting mouse wheel movements and sending messages to the background.js script.
+ * When the Alt key or right mouse button is pressed, it indicates a request to scroll between tabs.
+ * If the wheelDelta is positive, it signifies scrolling up, triggering a message to switch to the previous tab.
+ * If the wheelDelta is negative, it denotes scrolling down, prompting a message to switch to the next tab.
+ * To ensure smooth tab switching, the event's default behavior is prevented.
+ */
+window.addEventListener('mousewheel', function (e) {
+  if (e.altKey || e.buttons === 2) {
+    if (e.wheelDelta / 120 > 0) {
+      // Send message to background.js indicating a request to switch to the previous tab
+      chrome.runtime.sendMessage('up');
+    } else {
+      // Send message to background.js indicating a request to switch to the next tab
+      chrome.runtime.sendMessage('down');
+    }
+
+    // Prevent the default scrolling behavior of the new active tab (may not work in all cases)
+    e.preventDefault();
+  }
+});
+
+/*
+ * This function prevents the context menu from appearing after a scroll action with the right-click.
+ * It is attached to the 'contextmenu' event and removes itself after execution to prevent continuous blocking.
+ */
+function preventOneContextMenuEvent(e) {
+  e.preventDefault();
+  window.removeEventListener('contextmenu', preventOneContextMenuEvent);
+}

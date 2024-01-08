@@ -3,7 +3,8 @@
     "name": "Shortkuts for Chrome",
     "version": "1.0",
     "description": "Chrome extension for useful shortcuts",
-    "permissions": ["tabs"],
+    "permissions": ["tabs","scripting"],
+    "host_permissions": ["https://*/*", "http://*/*"],
     "background": {
         "service_worker": "background.js"
       },
