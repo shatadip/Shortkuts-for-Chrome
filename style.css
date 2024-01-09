@@ -27,3 +27,27 @@ ol {
 li {
   margin-bottom: 8px;
 }
+
+.green-bold {
+  font-weight: bold;
+    color: darkgreen;
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    text-align: center;
+    line-height: 25px;
+    border-radius: 50%;
+    /* background-color: greenyellow; */
+    border: 1px solid green;
+}
+.red-bold {
+  font-weight: bold;
+    color: red;
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    text-align: center;
+    line-height: 25px;
+    border-radius: 50%;
+    border: 1px solid red;
+}

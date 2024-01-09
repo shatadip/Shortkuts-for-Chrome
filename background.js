@@ -20,6 +20,24 @@ chrome.runtime.onMessage.addListener(function (message) {
   }
 });
 
+// Listen for keyboard shortcuts
+chrome.commands.onCommand.addListener(function (command) {
+  switch (command) {
+    case 'deleteTabsToRight':
+      deleteTabsToRight();
+      break;
+    case 'deleteTabsToLeft':
+      deleteTabsToLeft();
+      break;
+    case 'closeAllOtherTabs':
+      closeAllOtherTabs();
+      break;
+    case 'duplicateTab':
+      duplicateTab();
+      break;
+  }
+});
+
 /*
  * Handle incoming extension messages
  * @param {string} message - The received message
@@ -112,4 +130,82 @@ function preventOneContextMenuEvent(event) {
 
   // Remove the event listener to avoid conflicts with subsequent interactions
   window.removeEventListener('contextmenu', preventOneContextMenuEvent);
+}
+
+/*
+ * Close all tabs to the right of the current active tab
+*/
+function deleteTabsToRight() {
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    const currentTab = tabs[0];
+
+    if (currentTab) {
+      const currentIndex = currentTab.index;
+
+      chrome.tabs.query({ currentWindow: true }, function (allTabs) {
+        const tabsToDelete = allTabs.filter(tab => tab.index > currentIndex);
+
+        if (tabsToDelete.length > 0) {
+          const tabIdsToDelete = tabsToDelete.map(tab => tab.id);
+
+          // Close the tabs to the right
+          chrome.tabs.remove(tabIdsToDelete);
+        }
+      });
+    }
+  });
+}
+/*
+ * Close all tabs to the left of the current active tab
+*/
+function deleteTabsToLeft() {
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    const currentTab = tabs[0];
+
+    if (currentTab) {
+      const currentIndex = currentTab.index;
+
+      chrome.tabs.query({ currentWindow: true }, function (allTabs) {
+        const tabsToDelete = allTabs.filter(tab => tab.index < currentIndex);
+
+        if (tabsToDelete.length > 0) {
+          const tabIdsToDelete = tabsToDelete.map(tab => tab.id);
+
+          // Close the tabs to the left
+          chrome.tabs.remove(tabIdsToDelete);
+        }
+      });
+    }
+  });
+}
+/*
+ * Close all other tabs except for current active tab
+*/
+function closeAllOtherTabs() {
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    const currentTab = tabs[0];
+
+    if (currentTab) {
+      chrome.tabs.query({ currentWindow: true }, function (allTabs) {
+        const tabsToKeep = allTabs.filter(tab => tab.id === currentTab.id);
+
+        // Close all tabs except the ones to keep
+        const tabsToClose = allTabs.filter(tab => tab.id !== currentTab.id);
+        chrome.tabs.remove(tabsToClose.map(tab => tab.id));
+      });
+    }
+  });
+}
+/*
+ * Duplicate current tab
+*/
+function duplicateTab() {
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    const currentTab = tabs[0];
+
+    if (currentTab) {
+      // Duplicate the current tab
+      chrome.tabs.duplicate(currentTab.id);
+    }
+  });
 }

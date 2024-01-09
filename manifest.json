@@ -3,8 +3,33 @@
     "name": "Shortkuts for Chrome",
     "version": "1.0",
     "description": "Chrome extension for useful shortcuts",
+    "author": "Shatadip Majumder",
     "permissions": ["tabs","scripting"],
     "host_permissions": ["https://*/*", "http://*/*"],
+    "commands": {
+      "deleteTabsToRight": {
+        "suggested_key": {
+          "default": "Alt+Shift+Right"
+        },
+        "description": "Delete all tabs to the right"
+      },
+      "deleteTabsToLeft": {
+        "suggested_key": {
+          "default": "Alt+Shift+Left"
+        },
+        "description": "Delete all tabs to the left"
+      },
+      "closeAllOtherTabs": {
+        "suggested_key": {
+          "default": "Alt+Shift+Up"
+        },
+        "description": "Close all other tabs"
+      },
+      "duplicateTab": {
+      "suggested_key": { "default": "Alt+Shift+D" },
+      "description": "Duplicate the current tab"
+    }
+    },
     "background": {
         "service_worker": "background.js"
       },
