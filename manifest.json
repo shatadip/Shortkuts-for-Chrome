@@ -1,50 +1,62 @@
 {
-    "manifest_version": 3,
-    "name": "Shortkuts for Chrome",
-    "version": "1.0",
-    "description": "Chrome extension for useful shortcuts",
-    "author": "Shatadip Majumder",
-    "permissions": ["tabs","scripting"],
-    "host_permissions": ["https://*/*", "http://*/*"],
-    "commands": {
-      "deleteTabsToRight": {
-        "suggested_key": {
-          "default": "Alt+Shift+Right"
-        },
-        "description": "Delete all tabs to the right"
+  "manifest_version": 3,
+  "name": "Shortkuts for Chrome",
+  "version": "1.0",
+  "description": "Chrome extension for useful shortcuts",
+  "author": "Shatadip Majumder",
+  "permissions": [
+    "tabs",
+    "activeTab",
+    "commands",
+    "storage",
+    "scripting",
+    "management"
+  ],
+  "host_permissions": [
+    "https://*/*",
+    "http://*/*"
+  ],
+  "commands": {
+    "deleteTabsToRight": {
+      "suggested_key": {
+        "default": "Alt+Shift+Right"
       },
-      "deleteTabsToLeft": {
-        "suggested_key": {
-          "default": "Alt+Shift+Left"
-        },
-        "description": "Delete all tabs to the left"
+      "description": "Delete all tabs to the right"
+    },
+    "deleteTabsToLeft": {
+      "suggested_key": {
+        "default": "Alt+Shift+Left"
       },
-      "closeAllOtherTabs": {
-        "suggested_key": {
-          "default": "Alt+Shift+Up"
-        },
-        "description": "Close all other tabs"
+      "description": "Delete all tabs to the left"
+    },
+    "closeAllOtherTabs": {
+      "suggested_key": {
+        "default": "Alt+Shift+Up"
       },
-      "duplicateTab": {
-      "suggested_key": { "default": "Alt+Shift+D" },
+      "description": "Close all other tabs"
+    },
+    "duplicateTab": {
+      "suggested_key": {
+        "default": "Alt+Shift+D"
+      },
       "description": "Duplicate the current tab"
     }
-    },
-    "background": {
-        "service_worker": "background.js"
-      },
-    "action": {
-      "default_popup": "popup.html",
-      "default_icon": {
-        "32": "icons/icon32.png",
-        "48": "icons/icon48.png",
-        "128": "icons/icon128.png"
-      }
-    },
-    "icons": {
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
       "32": "icons/icon32.png",
       "48": "icons/icon48.png",
       "128": "icons/icon128.png"
     }
+  },
+  "icons": {
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
   }
-  
+}

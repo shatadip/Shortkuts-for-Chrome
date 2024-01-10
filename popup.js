@@ -19,7 +19,15 @@ window.addEventListener('mousewheel', function (e) {
     e.preventDefault();
   }
 });
-
+window.addEventListener('keydown', function (e) {
+  if (e.altKey && e.key === ',') {
+    // Send message to background.js indicating a request to move the current tab left
+    chrome.runtime.sendMessage('moveLeft');
+  } else if (e.altKey && e.key === '.') {
+    // Send message to background.js indicating a request to move the current tab right
+    chrome.runtime.sendMessage('moveRight');
+  }
+});
 /*
  * This function prevents the context menu from appearing after a scroll action with the right-click.
  * It is attached to the 'contextmenu' event and removes itself after execution to prevent continuous blocking.

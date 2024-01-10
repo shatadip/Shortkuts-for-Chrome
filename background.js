@@ -1,5 +1,6 @@
 // Listen for the extension installation event and inject the script into all opened tabs
-chrome.runtime.onInstalled.addListener(loadScriptInAllTabs);
+chrome.runtime.onInstalled.addListener(loadScriptInAllTabs())
+
 
 // Listen for incoming messages from the extension
 chrome.runtime.onMessage.addListener(onMessage);
@@ -60,6 +61,12 @@ function onMessage(message, sender, sendResponse) {
   if (message === 'down') {
     // Activate the tab below the current one
     activateTab(sender.tab.index + 1, sender.tab.windowId);
+  }
+  if (message === 'moveLeft') {
+    moveTabLeft();
+  }
+  if (message === 'moveRight') {
+    moveTabRight();
   }
 }
 
@@ -198,14 +205,109 @@ function closeAllOtherTabs() {
 }
 /*
  * Duplicate current tab
-*/
+ */
 function duplicateTab() {
+  // Query for the active tab in the current window
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
     const currentTab = tabs[0];
 
+    // Check if a valid current tab exists
     if (currentTab) {
       // Duplicate the current tab
       chrome.tabs.duplicate(currentTab.id);
     }
   });
+}
+
+/*
+ * Move the current tab to the left
+ */
+function moveTabLeft() {
+  // Query for the active tab in the current window
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    const currentTab = tabs[0];
+
+    // Check if a valid current tab exists
+    if (currentTab) {
+      const currentIndex = currentTab.index;
+
+      // Check if the current tab is not the leftmost tab
+      if (currentIndex > 0) {
+        const newIndex = currentIndex - 1;
+
+        // Call the moveTab function to move the tab to the specified index
+        moveTab(currentTab.id, newIndex);
+      }
+    }
+  });
+}
+
+/*
+ * Move the current tab to the right
+ */
+function moveTabRight() {
+  // Query for the active tab in the current window
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    const currentTab = tabs[0];
+
+    // Check if a valid current tab exists
+    if (currentTab) {
+      const currentIndex = currentTab.index;
+
+      // Query for all tabs in the current window
+      chrome.tabs.query({ currentWindow: true }, function (allTabs) {
+        // Check if the current tab is not the rightmost tab
+        if (currentIndex < allTabs.length - 1) {
+          const newIndex = currentIndex + 1;
+
+          // Call the moveTab function to move the tab to the specified index
+          moveTab(currentTab.id, newIndex);
+        }
+      });
+    }
+  });
+}
+
+/*
+ * Move a specific tab to a new index
+ */
+function moveTab(tabId, newIndex) {
+  // Use the Chrome API to move the specified tab to the new index
+  chrome.tabs.move(tabId, { index: newIndex }, function () {
+    // Confirm the tab has been moved and execute the provided callback
+    waitForTabMove(tabId, newIndex, function () {
+      // Handle completion if needed
+    });
+  });
+}
+
+/*
+ * Wait for a tab to be successfully moved to the target index
+ */
+function waitForTabMove(tabId, targetIndex, callback) {
+  // Configure the interval and maximum attempts for checking
+  const checkInterval = 100; // milliseconds
+  const maxAttempts = 50;
+  let attempts = 0;
+
+  // Define the function to check if the tab has been moved
+  function check() {
+    // Query for the specified tab at the target index
+    chrome.tabs.query({ id: tabId, index: targetIndex }, function (tabs) {
+      // Check if the tab is found at the target index
+      if (tabs.length > 0) {
+        // Tab has been moved successfully, execute the provided callback
+        callback();
+      } else {
+        // Tab move not yet reflected, increment attempts and check again if within the limit
+        attempts++;
+        if (attempts < maxAttempts) {
+          setTimeout(check, checkInterval);
+        }
+      }
+    });
+  }
+
+  // Start checking for the tab move
+  check();
 }
